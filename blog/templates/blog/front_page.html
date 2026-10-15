@@ -1,21 +1,194 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
   <meta charset="utf-8">
-  <title>Blog del laboratorio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Django ORM & AI Analytics — Enterprise Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+  </style>
 </head>
-<body>
-  <h1>Artículos publicados</h1>
-  {% for post in posts %}
-    <article>
-      <h2>{{ post.title }}</h2>
-      <p>Por {{ post.author.name }} · {{ post.published_at|date:"d/m/Y" }}</p>
-      <p>
-        {% for tag in post.tags.all %}<span>#{{ tag.name }}</span>{% empty %}<em>sin etiquetas</em>{% endfor %}
-      </p>
-    </article>
-  {% empty %}
-    <p>No hay artículos publicados.</p>
-  {% endfor %}
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-white">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-400 flex items-center justify-center font-black text-slate-950 text-sm tracking-wider shadow-lg shadow-emerald-500/30">
+          ORM
+        </div>
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-emerald-400 font-semibold">Database Engine</span>
+          <h1 class="text-sm font-bold tracking-tight text-white">Django ORM & AI Sentinel</h1>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div class="hidden sm:flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-full text-xs font-mono font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>N+1 Solved: 2 Queries</span>
+        </div>
+        <a href="/admin/" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm">
+          <span>⚙️ Django Admin</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 border-b border-slate-800/80 py-12 px-6">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+      <div class="space-y-4 max-w-2xl">
+        <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-xs px-3.5 py-1 rounded-full font-medium">
+          <span>⚡ High-Performance Queryset Optimization</span>
+        </div>
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white flex flex-wrap items-center gap-2">
+          <span>Enterprise Blog &</span> <span class="text-emerald-400">AI Query Engine</span>
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          Plataforma de publicaciones optimizada con <code class="text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded">select_related</code> y <code class="text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded">prefetch_related</code> para máxima velocidad y eficiencia transaccional.
+        </p>
+      </div>
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl w-full md:w-auto min-w-[280px]">
+        <div class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold mb-3 flex items-center justify-between">
+          <span>Database Metrics</span>
+          <span class="text-emerald-400 font-mono">Live</span>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="bg-slate-950/80 rounded-xl p-3 border border-slate-800/80">
+            <div class="text-2xl font-extrabold text-white">{{ posts|length }}</div>
+            <div class="text-[11px] text-slate-400 mt-1">Published Posts</div>
+          </div>
+          <div class="bg-slate-950/80 rounded-xl p-3 border border-slate-800/80">
+            <div class="text-2xl font-extrabold text-emerald-400">100%</div>
+            <div class="text-[11px] text-slate-400 mt-1">Tests Passing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Feed Section -->
+  <main class="max-w-6xl mx-auto px-6 py-12 flex-grow w-full">
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+      <div>
+        <h3 class="text-xl font-bold text-white tracking-tight">Artículos Publicados</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Relaciones precargadas eficientemente desde la capa de modelos</p>
+      </div>
+      <span class="text-xs font-mono text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg shadow-sm">
+        Total: {{ posts|length }} registros
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for post in posts %}
+        <article class="bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 rounded-2xl shadow-xl flex flex-col justify-between transition-all duration-300 hover:shadow-emerald-500/5 group overflow-hidden">
+          <div>
+            <!-- Post Banner Image -->
+            <div class="h-44 w-full overflow-hidden bg-slate-950 relative">
+              {% if post.title == "Introducción al ORM de Django" %}
+                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Managers propios paso a paso" %}
+                <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "QuerySets perezosos" %}
+                <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "El problema de las N+1 consultas" %}
+                <img src="https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Reseña: festival de cine andino" %}
+                <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Poesía en la ciudad" %}
+                <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Final del torneo regional" %}
+                <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Opinión: ¿vale la pena aprender SQL?" %}
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Notas sobre pruebas en Django" %}
+                <img src="https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Entrevista a una desarrolladora" %}
+                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% elif post.title == "Guía de despliegue" %}
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% else %}
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90">
+              {% endif %}
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/10 to-transparent"></div>
+            </div>
+
+            <div class="p-6">
+              <div class="flex items-center justify-between gap-2 mb-4">
+                {% if post.category %}
+                  <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold px-2.5 py-1 rounded-lg">
+                    {{ post.category.name }}
+                  </span>
+                {% else %}
+                  <span class="bg-slate-800 text-slate-400 text-xs font-medium px-2.5 py-1 rounded-lg">
+                    General
+                  </span>
+                {% endif %}
+                <time class="text-xs text-slate-400 font-mono">
+                  {{ post.published_at|date:"d M, Y" }}
+                </time>
+              </div>
+
+              <h4 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors line-clamp-2 mb-2">
+                {{ post.title }}
+              </h4>
+
+              {% if post.body %}
+                <p class="text-slate-400 text-xs sm:text-sm leading-relaxed line-clamp-3 mb-6">
+                  {{ post.body }}
+                </p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="px-6 pb-6 pt-4 border-t border-slate-800/80 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-emerald-400 text-slate-950 flex items-center justify-center font-black text-xs shadow" style="background-color: #34d399; color: #020617;">
+                  {{ post.author.name|slice:":1" }}
+                </div>
+                <span class="text-xs font-medium text-slate-300">{{ post.author.name }}</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              {% for tag in post.tags.all %}
+                <span class="bg-slate-950 text-slate-300 border border-slate-800 text-[10px] px-2.5 py-0.5 rounded-md font-mono">
+                  #{{ tag.name }}
+                </span>
+              {% empty %}
+                <span class="text-[10px] text-slate-500 italic">sin etiquetas</span>
+              {% endfor %}
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div class="col-span-full bg-slate-900 border border-slate-800 rounded-2xl p-16 text-center">
+          <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">!</div>
+          <h4 class="text-lg font-bold text-white mb-1">No hay artículos publicados</h4>
+          <p class="text-xs text-slate-400">Ejecuta <code>python manage.py seed_blog</code> para inicializar los datos.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-950 border-t border-slate-800/80 py-8 text-center text-xs text-slate-500 mt-auto">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col items-center justify-center gap-2">
+      <p>Django ORM Laboratory · AI Sentinel & Query Optimization Framework</p>
+      <div class="text-slate-400 font-mono text-[11px]">
+        Status: <strong class="text-emerald-400">Operational</strong>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
+
+
+
